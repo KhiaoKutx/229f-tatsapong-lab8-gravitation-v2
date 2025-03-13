@@ -9,7 +9,8 @@ public class Gravity : MonoBehaviour
     const float G = 0.00667f;
     public static List<Gravity> gravityObjectList;
 
-
+    [SerializeField] bool planet = false;
+    [SerializeField] int orbitSpeed = 1000;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -19,7 +20,12 @@ public class Gravity : MonoBehaviour
             gravityObjectList = new List<Gravity>();
         }
 
-        gravityObjectList.Add(this);
+        gravityObjectList.Add( this );
+
+        if (!planet)
+        {
+            rb.AddForce(Vector3.left * orbitSpeed);
+        }
     }
 
     private void FixedUpdate()
@@ -27,19 +33,19 @@ public class Gravity : MonoBehaviour
         foreach (var obj in gravityObjectList)
         {
             if (obj != this)
-            Attract(obj);
+                Attract(obj);
         }
     }
 
     void Attract(Gravity Other)
     {
         Rigidbody otherRB = Other.rb;
-        Vector3 directiong = otherRB.position - otherRB.position;
-        float distance = directiong.magnitude;
+        Vector3 direction = rb.position - otherRB.position;
+        float distance = direction.magnitude;
 
-        float forceMagnitude = G * (otherRB.mass * otherRB.mass/ Mathf.Pow( distance, 2));
-        Vector3 gavityForce = forceMagnitude * directiong.normalized;
+        float forceMagnitude = G * (rb.mass * otherRB.mass/ Mathf.Pow( distance, 2));
+        Vector3 gravityForce = forceMagnitude * direction.normalized;
 
-        otherRB.AddForce(gavityForce);
+        otherRB.AddForce(gravityForce);
     }
 }
